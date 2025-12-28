@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2">Total Cases</h6>
+                            <h2 class="card-title">{{ total_cases }}</h2>
+                        </div>
+                        <i class="fas fa-folder fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2">Active Cases</h6>
+                            <h2 class="card-title">{{ active_cases }}</h2>
+                        </div>
+                        <i class="fas fa-chart-line fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2">Recovered Amount</h6>
+                            <h2 class="card-title">${{ "%.2f"|format(recovered_amount) }}</h2>
+                        </div>
+                        <i class="fas fa-dollar-sign fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2">Pending Amount</h6>
+                            <h2 class="card-title">${{ "%.2f"|format(pending_amount) }}</h2>
+                        </div>
+                        <i class="fas fa-clock fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts and Analytics -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Recovery Performance</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="recoveryChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Case Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="caseDistributionChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Cases & Agency Performance -->
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Recent Cases</h5>
+                    <a href="/cases" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Case #</th>
+                                    <th>Customer</th>
+                                    <th>Amount Due</th>
+                                    <th>Agency</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for case in recent_cases %}
+                                <tr>
+                                    <td>{{ case.case_number }}</td>
+                                    <td>{{ case.customer_account.customer_name[:20] }}...</td>
+                                    <td>${{ "%.2f"|format(case.amount_due) }}</td>
+                                    <td>
+                                        {% if case.agency %}
+                                        <span class="badge bg-info">{{ case.agency.name[:15] }}...</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Unassigned</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if case.status == 'recovered' %}bg-success
+                                            {% elif case.status == 'active' %}bg-warning
+                                            {% elif case.status == 'pending' %}bg-secondary
+                                            {% else %}bg-info{% endif %}">
+                                            {{ case.status|title }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Agency Performance</h5>
+                </div>
+                <div class="card-body">
+                    <div class="agency-performance">
+                        {% for agency in agencies %}
+                        <div class="agency-item mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>{{ agency.name }}</span>
+                                <span class="text-primary">{{ "%.1f"|format(agency.recovery_rate) }}%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" 
+                                     style="width: {{ agency.recovery_rate }}%"
+                                     aria-valuenow="{{ agency.recovery_rate }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-1 small text-muted">
+                                <span>SLA: {{ "%.1f"|format(agency.sla_compliance) }}%</span>
+                                <span>{{ agency.cases|length }} cases</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary" onclick="allocateCases()">
+                            <i class="fas fa-robot"></i> AI Auto-Allocate Cases
+                        </button>
+                        <button class="btn btn-outline-success" onclick="generateReport()">
+                            <i class="fas fa-file-export"></i> Generate Performance Report
+                        </button>
+                        <button class="btn btn-outline-info" onclick="showSLAAlerts()">
+                            <i class="fas fa-bell"></i> View SLA Alerts
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeDashboardCharts();
+    });
+
+    function allocateCases() {
+        fetch('/api/ai-allocate', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({batch_size: 50})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                showNotification('AI Allocation Complete', `${data.allocated} cases allocated`, 'success');
+                setTimeout(() => location.reload(), 2000);
+            }
+        });
+    }
+
+    function generateReport() {
+        window.open('/reports/generate?type=performance', '_blank');
+    }
+
+    function showSLAAlerts() {
+        // Implementation for SLA alerts modal
+        alert('Showing SLA Alerts - Implementation in progress');
+    }
+</script>
+{% endblock %}

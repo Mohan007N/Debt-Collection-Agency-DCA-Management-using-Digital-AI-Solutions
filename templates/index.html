@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Home - AI-Powered DCA Management{% endblock %}
+
+{% block content %}
+<div class="parallax-container">
+    <!-- Hero Section with Parallax -->
+    <section class="hero-section">
+        <div class="parallax-bg" data-depth="0.1"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">AI-Powered DCA Management Platform</h1>
+            <p class="hero-subtitle">Transform your debt collection operations with intelligent automation and real-time insights</p>
+            <div class="hero-buttons">
+                {% if not current_user.is_authenticated %}
+                <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-user-plus"></i> Get Started
+                </a>
+                {% else %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="hero-stats">
+            <div class="stat-card">
+                <i class="fas fa-chart-line"></i>
+                <h3>40%+</h3>
+                <p>Recovery Rate Improvement</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-clock"></i>
+                <h3>60%</h3>
+                <p>Faster Recovery Time</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-shield-alt"></i>
+                <h3>99.9%</h3>
+                <p>SLA Compliance</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <h2 class="section-title">Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card" data-aos="fade-up">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>AI-Powered Allocation</h3>
+                    <p>Intelligent case distribution based on agency performance and specialization</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-network"></i>
+                    </div>
+                    <h3>Real-Time Analytics</h3>
+                    <p>Comprehensive dashboards with live performance metrics and predictive insights</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h3>Automated Workflows</h3>
+                    <p>Streamlined processes from case creation to recovery with automated follow-ups</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="process-section">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <div class="process-timeline">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <h3>Case Intake</h3>
+                    <p>Automated import of overdue accounts from enterprise systems</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <h3>AI Allocation</h3>
+                    <p>Intelligent assignment to optimal collection agencies</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <h3>Real-Time Tracking</h3>
+                    <p>Live monitoring of recovery progress and agency performance</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <h3>Automated Reporting</h3>
+                    <p>Compliance reports and performance analytics</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Transform Your DCA Management?</h2>
+            <p>Join enterprises like FedEx in revolutionizing debt recovery operations</p>
+            {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                Start Free Trial <i class="fas fa-arrow-right"></i>
+            </a>
+            {% endif %}
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/parallax.js') }}"></script>
+<script>
+    // Initialize parallax effects
+    document.addEventListener('DOMContentLoaded', function() {
+        const parallaxBg = document.querySelector('.parallax-bg');
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const rate = scrolled * 0.5;
+            parallaxBg.style.transform = `translate3d(0, ${rate}px, 0)`;
+        });
+    });
+</script>
+{% endblock %}

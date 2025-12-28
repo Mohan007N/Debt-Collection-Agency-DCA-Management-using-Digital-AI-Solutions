@@ -1,0 +1,1214 @@
+{% extends "base.html" %}
+{% block title %}Settings - DCA Platform{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="page-title">
+                    <i class="fas fa-cog me-2"></i>Settings
+                </h1>
+                <p class="page-subtitle">Configure platform settings and preferences</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <button type="button" class="btn btn-primary" onclick="saveAllSettings()">
+                    <i class="fas fa-save me-2"></i>Save All Settings
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Settings Navigation -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body p-0">
+                    <nav class="nav flex-column settings-nav">
+                        <a class="nav-link active" href="#general" data-bs-toggle="tab">
+                            <i class="fas fa-sliders-h me-2"></i>General
+                        </a>
+                        <a class="nav-link" href="#notifications" data-bs-toggle="tab">
+                            <i class="fas fa-bell me-2"></i>Notifications
+                        </a>
+                        <a class="nav-link" href="#allocation" data-bs-toggle="tab">
+                            <i class="fas fa-robot me-2"></i>AI Allocation
+                        </a>
+                        <a class="nav-link" href="#sla" data-bs-toggle="tab">
+                            <i class="fas fa-shield-alt me-2"></i>SLA Settings
+                        </a>
+                        <a class="nav-link" href="#integration" data-bs-toggle="tab">
+                            <i class="fas fa-plug me-2"></i>Integrations
+                        </a>
+                        <a class="nav-link" href="#security" data-bs-toggle="tab">
+                            <i class="fas fa-lock me-2"></i>Security
+                        </a>
+                        <a class="nav-link" href="#backup" data-bs-toggle="tab">
+                            <i class="fas fa-database me-2"></i>Backup
+                        </a>
+                        <a class="nav-link" href="#api" data-bs-toggle="tab">
+                            <i class="fas fa-code me-2"></i>API Access
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Settings Content -->
+        <div class="col-md-9">
+            <div class="tab-content">
+                <!-- General Settings -->
+                <div class="tab-pane fade show active" id="general">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">General Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Platform Name</label>
+                                    <input type="text" class="form-control" id="platformName" 
+                                           value="DCA Management Platform">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Default Currency</label>
+                                    <select class="form-select" id="defaultCurrency">
+                                        <option value="USD" selected>US Dollar (USD)</option>
+                                        <option value="EUR">Euro (EUR)</option>
+                                        <option value="GBP">British Pound (GBP)</option>
+                                        <option value="INR">Indian Rupee (INR)</option>
+                                        <option value="AUD">Australian Dollar (AUD)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Time Zone</label>
+                                    <select class="form-select" id="timeZone">
+                                        <option value="UTC">UTC</option>
+                                        <option value="EST" selected>Eastern Time (EST)</option>
+                                        <option value="PST">Pacific Time (PST)</option>
+                                        <option value="GMT">GMT</option>
+                                        <option value="IST">India Standard Time (IST)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Date Format</label>
+                                    <select class="form-select" id="dateFormat">
+                                        <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                        <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                                        <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Items Per Page</label>
+                                    <select class="form-select" id="itemsPerPage">
+                                        <option value="10">10 items</option>
+                                        <option value="20" selected>20 items</option>
+                                        <option value="50">50 items</option>
+                                        <option value="100">100 items</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Default Case Status</label>
+                                    <select class="form-select" id="defaultCaseStatus">
+                                        <option value="pending" selected>Pending</option>
+                                        <option value="review">Under Review</option>
+                                        <option value="allocated">Allocated</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="autoRefresh" checked>
+                                        <label class="form-check-label" for="autoRefresh">
+                                            Enable Auto-Refresh Dashboard
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showTutorial" checked>
+                                        <label class="form-check-label" for="showTutorial">
+                                            Show Tutorials for New Users
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notification Settings -->
+                <div class="tab-pane fade" id="notifications">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Notification Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="emailCaseAllocation" checked>
+                                        <label class="form-check-label" for="emailCaseAllocation">
+                                            Email on Case Allocation
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="emailCaseUpdate" checked>
+                                        <label class="form-check-label" for="emailCaseUpdate">
+                                            Email on Case Updates
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="emailSLAViolation" checked>
+                                        <label class="form-check-label" for="emailSLAViolation">
+                                            Email on SLA Violations
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="emailRecovery" checked>
+                                        <label class="form-check-label" for="emailRecovery">
+                                            Email on Recoveries
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="pushAllocation">
+                                        <label class="form-check-label" for="pushAllocation">
+                                            Push Notifications for Allocations
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="pushSLA">
+                                        <label class="form-check-label" for="pushSLA">
+                                            Push Notifications for SLA Alerts
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Daily Digest Time</label>
+                                    <input type="time" class="form-control" id="dailyDigestTime" value="17:00">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Alert Threshold (Days)</label>
+                                    <input type="number" class="form-control" id="alertThreshold" value="7" min="1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI Allocation Settings -->
+                <div class="tab-pane fade" id="allocation">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">AI Allocation Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Default Allocation Method</label>
+                                    <select class="form-select" id="allocationMethod">
+                                        <option value="performance">Performance-Based</option>
+                                        <option value="round_robin" selected>Round Robin</option>
+                                        <option value="specialization">Specialization-Based</option>
+                                        <option value="capacity">Capacity-Based</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Batch Size for Auto-Allocation</label>
+                                    <input type="number" class="form-control" id="batchSize" value="50" min="1" max="500">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Performance Weight (%)</label>
+                                    <input type="range" class="form-range" id="performanceWeight" min="0" max="100" value="60">
+                                    <div class="d-flex justify-content-between">
+                                        <small>0%</small>
+                                        <small id="performanceWeightValue">60%</small>
+                                        <small>100%</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Capacity Weight (%)</label>
+                                    <input type="range" class="form-range" id="capacityWeight" min="0" max="100" value="40">
+                                    <div class="d-flex justify-content-between">
+                                        <small>0%</small>
+                                        <small id="capacityWeightValue">40%</small>
+                                        <small>100%</small>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="autoAllocateNew" checked>
+                                        <label class="form-check-label" for="autoAllocateNew">
+                                            Auto-allocate new cases
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="reAllocateStale">
+                                        <label class="form-check-label" for="reAllocateStale">
+                                            Re-allocate stale cases (30+ days)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="prioritizeHighValue">
+                                        <label class="form-check-label" for="prioritizeHighValue">
+                                            Prioritize high-value cases
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- SLA Settings -->
+                <div class="tab-pane fade" id="sla">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">SLA (Service Level Agreement) Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Initial Allocation SLA (Hours)</label>
+                                    <input type="number" class="form-control" id="initialAllocationSLA" value="24" min="1">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Case Update SLA (Hours)</label>
+                                    <input type="number" class="form-control" id="caseUpdateSLA" value="48" min="1">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Recovery SLA (Days)</label>
+                                    <input type="number" class="form-control" id="recoverySLA" value="90" min="1">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Communication SLA (Hours)</label>
+                                    <input type="number" class="form-control" id="communicationSLA" value="72" min="1">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Warning Threshold (%)</label>
+                                    <input type="number" class="form-control" id="warningThreshold" value="80" min="0" max="100">
+                                    <small class="text-muted">Send warning when SLA compliance falls below this percentage</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Critical Threshold (%)</label>
+                                    <input type="number" class="form-control" id="criticalThreshold" value="60" min="0" max="100">
+                                    <small class="text-muted">Send critical alert when SLA compliance falls below this percentage</small>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="enableSLAEscalation" checked>
+                                        <label class="form-check-label" for="enableSLAEscalation">
+                                            Enable SLA Escalation
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="autoSLAReports">
+                                        <label class="form-check-label" for="autoSLAReports">
+                                            Generate Automated SLA Reports
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Integration Settings -->
+                <div class="tab-pane fade" id="integration">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Integration Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">ERP System Integration</label>
+                                    <select class="form-select" id="erpIntegration">
+                                        <option value="none">None</option>
+                                        <option value="sap">SAP</option>
+                                        <option value="oracle">Oracle</option>
+                                        <option value="dynamics">Microsoft Dynamics</option>
+                                        <option value="netsuite">NetSuite</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">CRM Integration</label>
+                                    <select class="form-select" id="crmIntegration">
+                                        <option value="none">None</option>
+                                        <option value="salesforce">Salesforce</option>
+                                        <option value="hubspot">HubSpot</option>
+                                        <option value="zoho">Zoho CRM</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email Service</label>
+                                    <select class="form-select" id="emailService">
+                                        <option value="smtp">SMTP</option>
+                                        <option value="sendgrid">SendGrid</option>
+                                        <option value="mailgun">Mailgun</option>
+                                        <option value="ses">Amazon SES</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">SMS Service</label>
+                                    <select class="form-select" id="smsService">
+                                        <option value="none">None</option>
+                                        <option value="twilio">Twilio</option>
+                                        <option value="plivo">Plivo</option>
+                                        <option value="nexmo">Vonage (Nexmo)</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <h6 class="border-bottom pb-2 mb-3">API Keys</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label">SendGrid API Key</label>
+                                        <input type="password" class="form-control" id="sendgridApiKey">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Twilio Account SID</label>
+                                        <input type="password" class="form-control" id="twilioAccountSid">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Twilio Auth Token</label>
+                                        <input type="password" class="form-control" id="twilioAuthToken">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="enableWebhooks">
+                                        <label class="form-check-label" for="enableWebhooks">
+                                            Enable Webhooks
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Security Settings -->
+                <div class="tab-pane fade" id="security">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Security Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Session Timeout (Minutes)</label>
+                                    <input type="number" class="form-control" id="sessionTimeout" value="30" min="5" max="1440">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Max Login Attempts</label>
+                                    <input type="number" class="form-control" id="maxLoginAttempts" value="5" min="1" max="10">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Password Expiry (Days)</label>
+                                    <input type="number" class="form-control" id="passwordExpiry" value="90" min="1" max="365">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Password History</label>
+                                    <input type="number" class="form-control" id="passwordHistory" value="5" min="0" max="10">
+                                    <small class="text-muted">Number of previous passwords to remember (0 = unlimited)</small>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="enable2FA" checked>
+                                        <label class="form-check-label" for="enable2FA">
+                                            Require Two-Factor Authentication
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="forceSSL">
+                                        <label class="form-check-label" for="forceSSL">
+                                            Force HTTPS/SSL
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="ipWhitelist">
+                                        <label class="form-check-label" for="ipWhitelist">
+                                            Enable IP Whitelist
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12" id="ipListContainer" style="display: none;">
+                                    <label class="form-label">Allowed IP Addresses</label>
+                                    <textarea class="form-control" id="ipWhitelistAddresses" rows="3" 
+                                              placeholder="Enter one IP address per line"></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <h6 class="border-bottom pb-2 mb-3">Audit Logging</h6>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="auditLogAllActions" checked>
+                                        <label class="form-check-label" for="auditLogAllActions">
+                                            Log All User Actions
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="auditLogDataChanges">
+                                        <label class="form-check-label" for="auditLogDataChanges">
+                                            Log Data Changes
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="auditLogLoginAttempts">
+                                        <label class="form-check-label" for="auditLogLoginAttempts">
+                                            Log Login Attempts
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Backup Settings -->
+                <div class="tab-pane fade" id="backup">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Backup & Data Management</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Auto Backup Frequency</label>
+                                    <select class="form-select" id="backupFrequency">
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly" selected>Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                        <option value="never">Never</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Backup Retention (Days)</label>
+                                    <input type="number" class="form-control" id="backupRetention" value="30" min="1" max="365">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Backup Type</label>
+                                    <select class="form-select" id="backupType">
+                                        <option value="full">Full Backup</option>
+                                        <option value="incremental" selected>Incremental</option>
+                                        <option value="differential">Differential</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Backup Storage</label>
+                                    <select class="form-select" id="backupStorage">
+                                        <option value="local">Local Server</option>
+                                        <option value="s3">Amazon S3</option>
+                                        <option value="azure">Azure Blob</option>
+                                        <option value="google">Google Cloud</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="encryptBackups" checked>
+                                        <label class="form-check-label" for="encryptBackups">
+                                            Encrypt Backups
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="autoTestBackups">
+                                        <label class="form-check-label" for="autoTestBackups">
+                                            Auto-test Backups
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <h6 class="border-bottom pb-2 mb-3">Backup Actions</h6>
+                                    <div class="d-grid gap-2">
+                                        <button type="button" class="btn btn-outline-primary" onclick="createBackup()">
+                                            <i class="fas fa-database me-2"></i>Create Backup Now
+                                        </button>
+                                        <button type="button" class="btn btn-outline-info" onclick="restoreBackup()">
+                                            <i class="fas fa-undo me-2"></i>Restore from Backup
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger" onclick="exportAllData()">
+                                            <i class="fas fa-download me-2"></i>Export All Data
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- API Access -->
+                <div class="tab-pane fade" id="api">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">API Access</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">API Access</label>
+                                    <select class="form-select" id="apiAccess">
+                                        <option value="enabled" selected>Enabled</option>
+                                        <option value="disabled">Disabled</option>
+                                        <option value="restricted">Restricted</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">API Rate Limit (Requests/Minute)</label>
+                                    <input type="number" class="form-control" id="apiRateLimit" value="100" min="1" max="1000">
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="requireApiKey" checked>
+                                        <label class="form-check-label" for="requireApiKey">
+                                            Require API Key
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="logApiCalls" checked>
+                                        <label class="form-check-label" for="logApiCalls">
+                                            Log API Calls
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <h6 class="border-bottom pb-2 mb-3">API Keys</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Key Name</th>
+                                                    <th>API Key</th>
+                                                    <th>Created</th>
+                                                    <th>Last Used</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="apiKeysTable">
+                                                <!-- API Keys loaded dynamically -->
+                                                <tr>
+                                                    <td colspan="5" class="text-center py-3">
+                                                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                            <span class="visually-hidden">Loading...</span>
+                                                        </div>
+                                                        <p class="mt-2 small text-muted">Loading API keys...</p>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="generateApiKey()">
+                                        <i class="fas fa-key me-2"></i>Generate New API Key
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- API Key Modal -->
+<div class="modal fade" id="apiKeyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New API Key</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Key Name</label>
+                    <input type="text" class="form-control" id="newApiKeyName" placeholder="e.g., Production API Key">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Permissions</label>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="permRead" checked>
+                                <label class="form-check-label" for="permRead">Read Access</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="permWrite">
+                                <label class="form-check-label" for="permWrite">Write Access</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="permDelete">
+                                <label class="form-check-label" for="permDelete">Delete Access</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="permAdmin">
+                                <label class="form-check-label" for="permAdmin">Admin Access</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Expiration Date</label>
+                    <input type="date" class="form-control" id="apiKeyExpiry">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="createApiKey()">Generate Key</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Backup Modal -->
+<div class="modal fade" id="backupModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Backup in Progress</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p>Creating backup...</p>
+                <div class="progress mb-3">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" style="width: 0%"></div>
+                </div>
+                <p class="small text-muted" id="backupStatus">Initializing backup process...</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadSettings();
+    loadApiKeys();
+    
+    // Setup event listeners
+    document.getElementById('performanceWeight').addEventListener('input', function() {
+        document.getElementById('performanceWeightValue').textContent = this.value + '%';
+        updateWeights();
+    });
+    
+    document.getElementById('capacityWeight').addEventListener('input', function() {
+        document.getElementById('capacityWeightValue').textContent = this.value + '%';
+        updateWeights();
+    });
+    
+    document.getElementById('ipWhitelist').addEventListener('change', function() {
+        document.getElementById('ipListContainer').style.display = this.checked ? 'block' : 'none';
+    });
+    
+    // Setup tab navigation
+    const tabTriggers = document.querySelectorAll('.settings-nav .nav-link');
+    tabTriggers.forEach(tab => {
+        tab.addEventListener('click', function() {
+            tabTriggers.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+});
+
+function loadSettings() {
+    // Load settings from localStorage or API
+    const settings = JSON.parse(localStorage.getItem('platform_settings') || '{}');
+    
+    // General
+    document.getElementById('platformName').value = settings.platformName || 'DCA Management Platform';
+    document.getElementById('defaultCurrency').value = settings.defaultCurrency || 'USD';
+    document.getElementById('timeZone').value = settings.timeZone || 'EST';
+    document.getElementById('dateFormat').value = settings.dateFormat || 'MM/DD/YYYY';
+    document.getElementById('itemsPerPage').value = settings.itemsPerPage || 20;
+    document.getElementById('defaultCaseStatus').value = settings.defaultCaseStatus || 'pending';
+    document.getElementById('autoRefresh').checked = settings.autoRefresh !== false;
+    document.getElementById('showTutorial').checked = settings.showTutorial !== false;
+    
+    // Notifications
+    document.getElementById('emailCaseAllocation').checked = settings.emailCaseAllocation !== false;
+    document.getElementById('emailCaseUpdate').checked = settings.emailCaseUpdate !== false;
+    document.getElementById('emailSLAViolation').checked = settings.emailSLAViolation !== false;
+    document.getElementById('emailRecovery').checked = settings.emailRecovery !== false;
+    document.getElementById('pushAllocation').checked = settings.pushAllocation || false;
+    document.getElementById('pushSLA').checked = settings.pushSLA || false;
+    document.getElementById('dailyDigestTime').value = settings.dailyDigestTime || '17:00';
+    document.getElementById('alertThreshold').value = settings.alertThreshold || 7;
+    
+    // AI Allocation
+    document.getElementById('allocationMethod').value = settings.allocationMethod || 'round_robin';
+    document.getElementById('batchSize').value = settings.batchSize || 50;
+    document.getElementById('performanceWeight').value = settings.performanceWeight || 60;
+    document.getElementById('capacityWeight').value = settings.capacityWeight || 40;
+    document.getElementById('performanceWeightValue').textContent = (settings.performanceWeight || 60) + '%';
+    document.getElementById('capacityWeightValue').textContent = (settings.capacityWeight || 40) + '%';
+    document.getElementById('autoAllocateNew').checked = settings.autoAllocateNew !== false;
+    document.getElementById('reAllocateStale').checked = settings.reAllocateStale || false;
+    document.getElementById('prioritizeHighValue').checked = settings.prioritizeHighValue || false;
+    
+    // SLA
+    document.getElementById('initialAllocationSLA').value = settings.initialAllocationSLA || 24;
+    document.getElementById('caseUpdateSLA').value = settings.caseUpdateSLA || 48;
+    document.getElementById('recoverySLA').value = settings.recoverySLA || 90;
+    document.getElementById('communicationSLA').value = settings.communicationSLA || 72;
+    document.getElementById('warningThreshold').value = settings.warningThreshold || 80;
+    document.getElementById('criticalThreshold').value = settings.criticalThreshold || 60;
+    document.getElementById('enableSLAEscalation').checked = settings.enableSLAEscalation !== false;
+    document.getElementById('autoSLAReports').checked = settings.autoSLAReports || false;
+    
+    // Integrations
+    document.getElementById('erpIntegration').value = settings.erpIntegration || 'none';
+    document.getElementById('crmIntegration').value = settings.crmIntegration || 'none';
+    document.getElementById('emailService').value = settings.emailService || 'smtp';
+    document.getElementById('smsService').value = settings.smsService || 'none';
+    document.getElementById('sendgridApiKey').value = settings.sendgridApiKey || '';
+    document.getElementById('twilioAccountSid').value = settings.twilioAccountSid || '';
+    document.getElementById('twilioAuthToken').value = settings.twilioAuthToken || '';
+    document.getElementById('enableWebhooks').checked = settings.enableWebhooks || false;
+    
+    // Security
+    document.getElementById('sessionTimeout').value = settings.sessionTimeout || 30;
+    document.getElementById('maxLoginAttempts').value = settings.maxLoginAttempts || 5;
+    document.getElementById('passwordExpiry').value = settings.passwordExpiry || 90;
+    document.getElementById('passwordHistory').value = settings.passwordHistory || 5;
+    document.getElementById('enable2FA').checked = settings.enable2FA !== false;
+    document.getElementById('forceSSL').checked = settings.forceSSL !== false;
+    document.getElementById('ipWhitelist').checked = settings.ipWhitelist || false;
+    document.getElementById('ipListContainer').style.display = settings.ipWhitelist ? 'block' : 'none';
+    document.getElementById('ipWhitelistAddresses').value = settings.ipWhitelistAddresses || '';
+    document.getElementById('auditLogAllActions').checked = settings.auditLogAllActions !== false;
+    document.getElementById('auditLogDataChanges').checked = settings.auditLogDataChanges || false;
+    document.getElementById('auditLogLoginAttempts').checked = settings.auditLogLoginAttempts || false;
+    
+    // Backup
+    document.getElementById('backupFrequency').value = settings.backupFrequency || 'weekly';
+    document.getElementById('backupRetention').value = settings.backupRetention || 30;
+    document.getElementById('backupType').value = settings.backupType || 'incremental';
+    document.getElementById('backupStorage').value = settings.backupStorage || 'local';
+    document.getElementById('encryptBackups').checked = settings.encryptBackups !== false;
+    document.getElementById('autoTestBackups').checked = settings.autoTestBackups || false;
+    
+    // API
+    document.getElementById('apiAccess').value = settings.apiAccess || 'enabled';
+    document.getElementById('apiRateLimit').value = settings.apiRateLimit || 100;
+    document.getElementById('requireApiKey').checked = settings.requireApiKey !== false;
+    document.getElementById('logApiCalls').checked = settings.logApiCalls !== false;
+}
+
+function updateWeights() {
+    const performanceWeight = parseInt(document.getElementById('performanceWeight').value);
+    const capacityWeight = parseInt(document.getElementById('capacityWeight').value);
+    
+    // Ensure total is 100%
+    if (performanceWeight + capacityWeight !== 100) {
+        // Auto-adjust to make total 100%
+        const total = performanceWeight + capacityWeight;
+        const ratio = 100 / total;
+        
+        document.getElementById('performanceWeight').value = Math.round(performanceWeight * ratio);
+        document.getElementById('capacityWeight').value = Math.round(capacityWeight * ratio);
+        
+        document.getElementById('performanceWeightValue').textContent = 
+            Math.round(performanceWeight * ratio) + '%';
+        document.getElementById('capacityWeightValue').textContent = 
+            Math.round(capacityWeight * ratio) + '%';
+    }
+}
+
+function saveAllSettings() {
+    const settings = {
+        // General
+        platformName: document.getElementById('platformName').value,
+        defaultCurrency: document.getElementById('defaultCurrency').value,
+        timeZone: document.getElementById('timeZone').value,
+        dateFormat: document.getElementById('dateFormat').value,
+        itemsPerPage: parseInt(document.getElementById('itemsPerPage').value),
+        defaultCaseStatus: document.getElementById('defaultCaseStatus').value,
+        autoRefresh: document.getElementById('autoRefresh').checked,
+        showTutorial: document.getElementById('showTutorial').checked,
+        
+        // Notifications
+        emailCaseAllocation: document.getElementById('emailCaseAllocation').checked,
+        emailCaseUpdate: document.getElementById('emailCaseUpdate').checked,
+        emailSLAViolation: document.getElementById('emailSLAViolation').checked,
+        emailRecovery: document.getElementById('emailRecovery').checked,
+        pushAllocation: document.getElementById('pushAllocation').checked,
+        pushSLA: document.getElementById('pushSLA').checked,
+        dailyDigestTime: document.getElementById('dailyDigestTime').value,
+        alertThreshold: parseInt(document.getElementById('alertThreshold').value),
+        
+        // AI Allocation
+        allocationMethod: document.getElementById('allocationMethod').value,
+        batchSize: parseInt(document.getElementById('batchSize').value),
+        performanceWeight: parseInt(document.getElementById('performanceWeight').value),
+        capacityWeight: parseInt(document.getElementById('capacityWeight').value),
+        autoAllocateNew: document.getElementById('autoAllocateNew').checked,
+        reAllocateStale: document.getElementById('reAllocateStale').checked,
+        prioritizeHighValue: document.getElementById('prioritizeHighValue').checked,
+        
+        // SLA
+        initialAllocationSLA: parseInt(document.getElementById('initialAllocationSLA').value),
+        caseUpdateSLA: parseInt(document.getElementById('caseUpdateSLA').value),
+        recoverySLA: parseInt(document.getElementById('recoverySLA').value),
+        communicationSLA: parseInt(document.getElementById('communicationSLA').value),
+        warningThreshold: parseInt(document.getElementById('warningThreshold').value),
+        criticalThreshold: parseInt(document.getElementById('criticalThreshold').value),
+        enableSLAEscalation: document.getElementById('enableSLAEscalation').checked,
+        autoSLAReports: document.getElementById('autoSLAReports').checked,
+        
+        // Integrations
+        erpIntegration: document.getElementById('erpIntegration').value,
+        crmIntegration: document.getElementById('crmIntegration').value,
+        emailService: document.getElementById('emailService').value,
+        smsService: document.getElementById('smsService').value,
+        sendgridApiKey: document.getElementById('sendgridApiKey').value,
+        twilioAccountSid: document.getElementById('twilioAccountSid').value,
+        twilioAuthToken: document.getElementById('twilioAuthToken').value,
+        enableWebhooks: document.getElementById('enableWebhooks').checked,
+        
+        // Security
+        sessionTimeout: parseInt(document.getElementById('sessionTimeout').value),
+        maxLoginAttempts: parseInt(document.getElementById('maxLoginAttempts').value),
+        passwordExpiry: parseInt(document.getElementById('passwordExpiry').value),
+        passwordHistory: parseInt(document.getElementById('passwordHistory').value),
+        enable2FA: document.getElementById('enable2FA').checked,
+        forceSSL: document.getElementById('forceSSL').checked,
+        ipWhitelist: document.getElementById('ipWhitelist').checked,
+        ipWhitelistAddresses: document.getElementById('ipWhitelistAddresses').value,
+        auditLogAllActions: document.getElementById('auditLogAllActions').checked,
+        auditLogDataChanges: document.getElementById('auditLogDataChanges').checked,
+        auditLogLoginAttempts: document.getElementById('auditLogLoginAttempts').checked,
+        
+        // Backup
+        backupFrequency: document.getElementById('backupFrequency').value,
+        backupRetention: parseInt(document.getElementById('backupRetention').value),
+        backupType: document.getElementById('backupType').value,
+        backupStorage: document.getElementById('backupStorage').value,
+        encryptBackups: document.getElementById('encryptBackups').checked,
+        autoTestBackups: document.getElementById('autoTestBackups').checked,
+        
+        // API
+        apiAccess: document.getElementById('apiAccess').value,
+        apiRateLimit: parseInt(document.getElementById('apiRateLimit').value),
+        requireApiKey: document.getElementById('requireApiKey').checked,
+        logApiCalls: document.getElementById('logApiCalls').checked
+    };
+    
+    // Save to localStorage
+    localStorage.setItem('platform_settings', JSON.stringify(settings));
+    
+    // Save to server
+    fetch('/api/save-settings', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(settings)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Settings Saved', 'All settings have been saved successfully', 'success');
+        }
+    });
+}
+
+function loadApiKeys() {
+    fetch('/api/api-keys')
+        .then(response => response.json())
+        .then(apiKeys => {
+            const tbody = document.getElementById('apiKeysTable');
+            
+            if (apiKeys.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center py-4">
+                            <i class="fas fa-key fa-2x text-muted mb-3"></i>
+                            <p class="text-muted">No API keys generated yet</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = apiKeys.map(key => `
+                <tr>
+                    <td>${key.name}</td>
+                    <td>
+                        <code class="api-key" onclick="copyApiKey('${key.key}')" title="Click to copy">
+                            ${key.key.substring(0, 8)}...${key.key.substring(key.key.length - 8)}
+                        </code>
+                    </td>
+                    <td>${key.created}</td>
+                    <td>${key.last_used || 'Never'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-danger" onclick="revokeApiKey('${key.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        });
+}
+
+function generateApiKey() {
+    const modal = new bootstrap.Modal(document.getElementById('apiKeyModal'));
+    modal.show();
+}
+
+function createApiKey() {
+    const name = document.getElementById('newApiKeyName').value;
+    if (!name) {
+        alert('Please enter a key name');
+        return;
+    }
+    
+    const permissions = {
+        read: document.getElementById('permRead').checked,
+        write: document.getElementById('permWrite').checked,
+        delete: document.getElementById('permDelete').checked,
+        admin: document.getElementById('permAdmin').checked
+    };
+    
+    const expiry = document.getElementById('apiKeyExpiry').value;
+    
+    fetch('/api/create-api-key', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            name: name,
+            permissions: permissions,
+            expiry: expiry
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('apiKeyModal')).hide();
+            document.getElementById('newApiKeyName').value = '';
+            loadApiKeys();
+            
+            // Show the new API key to the user
+            showApiKeyModal(data.api_key);
+        }
+    });
+}
+
+function showApiKeyModal(apiKey) {
+    const modalHTML = `
+        <div class="modal fade" id="showApiKeyModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">API Key Generated</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Save this API key now! You won't be able to see it again.
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Your API Key:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="generatedApiKey" 
+                                       value="${apiKey}" readonly>
+                                <button class="btn btn-primary" type="button" 
+                                        onclick="copyApiKey('${apiKey}')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                            I've Saved the Key
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if any
+    const existingModal = document.getElementById('showApiKeyModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Add and show the modal
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    const modal = new bootstrap.Modal(document.getElementById('showApiKeyModal'));
+    modal.show();
+}
+
+function copyApiKey(key) {
+    navigator.clipboard.writeText(key).then(() => {
+        showNotification('API Key Copied', 'API key copied to clipboard', 'success');
+    });
+}
+
+function revokeApiKey(keyId) {
+    if (confirm('Are you sure you want to revoke this API key?')) {
+        fetch(`/api/revoke-api-key/${keyId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadApiKeys();
+                showNotification('API Key Revoked', 'The API key has been revoked', 'success');
+            }
+        });
+    }
+}
+
+function createBackup() {
+    const modal = new bootstrap.Modal(document.getElementById('backupModal'));
+    modal.show();
+    
+    // Simulate backup progress
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += 10;
+        const progressBar = document.querySelector('#backupModal .progress-bar');
+        const statusText = document.getElementById('backupStatus');
+        
+        if (progressBar) progressBar.style.width = progress + '%';
+        
+        if (progress < 30) {
+            statusText.textContent = 'Backing up case data...';
+        } else if (progress < 60) {
+            statusText.textContent = 'Backing up agency data...';
+        } else if (progress < 90) {
+            statusText.textContent = 'Backing up user data...';
+        } else {
+            statusText.textContent = 'Finalizing backup...';
+        }
+        
+        if (progress >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+                modal.hide();
+                showNotification('Backup Complete', 'Backup created successfully', 'success');
+            }, 1000);
+        }
+    }, 500);
+}
+
+function restoreBackup() {
+    alert('Restore backup functionality would be implemented here');
+}
+
+function exportAllData() {
+    window.open('/api/export-all-data', '_blank');
+}
+
+function showNotification(title, message, type) {
+    alert(`${title}: ${message}`);
+}
+</script>
+
+<style>
+.settings-nav {
+    border-right: 1px solid #dee2e6;
+}
+
+.settings-nav .nav-link {
+    padding: 1rem 1.5rem;
+    color: #495057;
+    border-left: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.settings-nav .nav-link:hover {
+    background-color: #f8f9fa;
+    color: #667eea;
+}
+
+.settings-nav .nav-link.active {
+    background-color: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    border-left-color: #667eea;
+    font-weight: 500;
+}
+
+.settings-nav .nav-link i {
+    width: 20px;
+    text-align: center;
+}
+
+.tab-content .card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.form-range::-webkit-slider-thumb {
+    background: #667eea;
+}
+
+.form-range::-moz-range-thumb {
+    background: #667eea;
+}
+
+.form-range::-ms-thumb {
+    background: #667eea;
+}
+
+.api-key {
+    background: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.api-key:hover {
+    background: #e9ecef;
+}
+
+.color-option {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+}
+
+.border-bottom {
+    border-bottom: 1px solid #dee2e6 !important;
+}
+</style>
+{% endblock %}

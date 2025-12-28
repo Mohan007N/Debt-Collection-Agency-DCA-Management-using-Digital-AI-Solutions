@@ -1,0 +1,404 @@
+{% extends "base.html" %}
+{% block title %}Login - DCA Management Platform{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <div class="logo-circle">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h2>DCA Platform</h2>
+            <p class="text-muted">AI-Powered Debt Collection Management</p>
+        </div>
+        
+        {% if error %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            {{ error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endif %}
+        
+        <form method="POST" action="{{ url_for('login') }}" class="auth-form">
+            <div class="mb-4">
+                <label for="email" class="form-label">
+                    <i class="fas fa-envelope me-2"></i>Email Address
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-user"></i>
+                    </span>
+                    <input type="email" 
+                           class="form-control form-control-lg" 
+                           id="email" 
+                           name="email" 
+                           placeholder="Enter your email"
+                           required
+                           autofocus>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label for="password" class="form-label">
+                    <i class="fas fa-lock me-2"></i>Password
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-key"></i>
+                    </span>
+                    <input type="password" 
+                           class="form-control form-control-lg" 
+                           id="password" 
+                           name="password" 
+                           placeholder="Enter your password"
+                           required>
+                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div class="d-flex justify-content-end mt-2">
+                    <a href="#forgot-password" class="small text-primary" data-bs-toggle="modal">
+                        Forgot Password?
+                    </a>
+                </div>
+            </div>
+            
+            <div class="mb-4 form-check">
+                <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                <label class="form-check-label" for="remember">Remember me</label>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-lg w-100 mb-4">
+                <i class="fas fa-sign-in-alt me-2"></i>Login
+            </button>
+            
+            <div class="text-center mb-4">
+                <span class="text-muted">Or continue with</span>
+            </div>
+            
+            <div class="row g-2 mb-4">
+                <div class="col">
+                    <button type="button" class="btn btn-outline-dark w-100">
+                        <i class="fab fa-google me-2"></i>Google
+                    </button>
+                </div>
+                <div class="col">
+                    <button type="button" class="btn btn-outline-primary w-100">
+                        <i class="fab fa-microsoft me-2"></i>Microsoft
+                    </button>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <p class="mb-0">
+                    Don't have an account? 
+                    <a href="{{ url_for('register') }}" class="text-primary fw-bold">Sign up here</a>
+                </p>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Security Features Banner -->
+    <div class="security-banner mt-4">
+        <div class="security-features">
+            <div class="security-item">
+                <i class="fas fa-shield-check text-success"></i>
+                <span>256-bit Encryption</span>
+            </div>
+            <div class="security-item">
+                <i class="fas fa-user-shield text-info"></i>
+                <span>GDPR Compliant</span>
+            </div>
+            <div class="security-item">
+                <i class="fas fa-clock text-warning"></i>
+                <span>24/7 Monitoring</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Forgot Password Modal -->
+<div class="modal fade" id="forgot-password" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-key me-2"></i>Reset Password
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Enter your email address and we'll send you a link to reset your password.</p>
+                <div class="mb-3">
+                    <label for="reset-email" class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="reset-email" 
+                           placeholder="your.email@example.com">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="resetPassword()">
+                    Send Reset Link
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle password visibility
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.innerHTML = type === 'password' ? 
+                '<i class="fas fa-eye"></i>' : 
+                '<i class="fas fa-eye-slash"></i>';
+        });
+        
+        // Add floating label effect
+        const inputs = document.querySelectorAll('.form-control');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.parentElement.classList.add('focused');
+            });
+            
+            input.addEventListener('blur', function() {
+                if (!this.value) {
+                    this.parentElement.parentElement.classList.remove('focused');
+                }
+            });
+        });
+        
+        // Check for saved credentials
+        if (localStorage.getItem('rememberEmail')) {
+            document.getElementById('email').value = localStorage.getItem('rememberEmail');
+            document.getElementById('remember').checked = true;
+        }
+        
+        // Handle remember me
+        document.getElementById('remember').addEventListener('change', function() {
+            if (this.checked) {
+                const email = document.getElementById('email').value;
+                localStorage.setItem('rememberEmail', email);
+            } else {
+                localStorage.removeItem('rememberEmail');
+            }
+        });
+    });
+    
+    function resetPassword() {
+        const email = document.getElementById('reset-email').value;
+        if (!email) {
+            alert('Please enter your email address');
+            return;
+        }
+        
+        fetch('/api/reset-password', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({email: email})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Password reset link has been sent to your email');
+                bootstrap.Modal.getInstance(document.getElementById('forgot-password')).hide();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Network error. Please try again.');
+        });
+    }
+</script>
+
+<style>
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/static/assets/images/auth-bg-pattern.png');
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.auth-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 3rem;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    position: relative;
+    z-index: 1;
+    animation: slideUp 0.6s ease-out;
+}
+
+.auth-logo {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.logo-circle {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.logo-circle i {
+    font-size: 2.5rem;
+    color: white;
+}
+
+.auth-logo h2 {
+    font-weight: 800;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.auth-form .form-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.auth-form .input-group {
+    margin-bottom: 0.5rem;
+}
+
+.auth-form .input-group-text {
+    background: #f8f9fa;
+    border-right: none;
+}
+
+.auth-form .form-control {
+    border-left: none;
+    padding-left: 0;
+}
+
+.auth-form .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.auth-form .form-control-lg {
+    padding: 0.75rem 1rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    padding: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn-outline-dark, .btn-outline-primary {
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-dark:hover, .btn-outline-primary:hover {
+    transform: translateY(-2px);
+}
+
+.security-banner {
+    max-width: 450px;
+    width: 100%;
+}
+
+.security-features {
+    display: flex;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.security-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.security-item i {
+    font-size: 1.2rem;
+}
+
+.form-check-input:checked {
+    background-color: #667eea;
+    border-color: #667eea;
+}
+
+.form-check-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 576px) {
+    .auth-card {
+        padding: 2rem;
+        margin: 1rem;
+    }
+    
+    .security-features {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+}
+</style>
+{% endblock %}

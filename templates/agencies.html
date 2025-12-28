@@ -1,0 +1,812 @@
+{% extends "base.html" %}
+{% block title %}DCA Agencies - DCA Platform{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="page-title">
+                    <i class="fas fa-building me-2"></i>DCA Agencies
+                </h1>
+                <p class="page-subtitle">Manage your Debt Collection Agency partners</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newAgencyModal">
+                        <i class="fas fa-plus me-2"></i>Add Agency
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" onclick="refreshAgencies()">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="exportAgencies()">
+                        <i class="fas fa-download me-2"></i>Export
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agency Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2">Total Agencies</h6>
+                            <h2 class="card-title" id="totalAgencies">0</h2>
+                        </div>
+                        <i class="fas fa-building fa-2x text-primary opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2">Active Agencies</h6>
+                            <h2 class="card-title" id="activeAgencies">0</h2>
+                        </div>
+                        <i class="fas fa-check-circle fa-2x text-success opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2">Avg Recovery Rate</h6>
+                            <h2 class="card-title" id="avgRecoveryRate">0%</h2>
+                        </div>
+                        <i class="fas fa-chart-line fa-2x text-info opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2">SLA Compliance</h6>
+                            <h2 class="card-title" id="avgSlaCompliance">0%</h2>
+                        </div>
+                        <i class="fas fa-shield-alt fa-2x text-warning opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters and Search -->
+    <div class="card filters-card mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" id="statusFilter" onchange="filterAgencies()">
+                        <option value="all">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="suspended">Suspended</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Performance</label>
+                    <select class="form-select" id="performanceFilter" onchange="filterAgencies()">
+                        <option value="all">All Performance</option>
+                        <option value="high">High (80%+)</option>
+                        <option value="medium">Medium (50-79%)</option>
+                        <option value="low">Low (<50%)</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Search</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="searchInput" placeholder="Search agencies...">
+                        <button class="btn btn-outline-secondary" type="button" onclick="searchAgencies()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agency Cards Grid -->
+    <div class="row" id="agenciesGrid">
+        <!-- Agencies will be loaded here dynamically -->
+        <div class="col-md-12 text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3">Loading agencies...</p>
+        </div>
+    </div>
+</div>
+
+<!-- New Agency Modal -->
+<div class="modal fade" id="newAgencyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-plus me-2"></i>Add New Agency
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="newAgencyForm" onsubmit="createNewAgency(event)">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Agency Name *</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Agency Code *</label>
+                            <input type="text" class="form-control" name="code" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Contact Person *</label>
+                            <input type="text" class="form-control" name="contact_person" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email *</label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone</label>
+                            <input type="tel" class="form-control" name="phone">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" name="status">
+                                <option value="active" selected>Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="suspended">Suspended</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Contract Start Date</label>
+                            <input type="date" class="form-control" name="contract_start">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Contract End Date</label>
+                            <input type="date" class="form-control" name="contract_end">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Address</label>
+                            <textarea class="form-control" name="address" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Initial Recovery Rate (%)</label>
+                            <input type="number" class="form-control" name="recovery_rate" min="0" max="100" step="0.1">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Initial SLA Compliance (%)</label>
+                            <input type="number" class="form-control" name="sla_compliance" min="0" max="100" step="0.1">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Specialization</label>
+                            <div class="d-flex flex-wrap gap-2" id="specializationTags">
+                                <span class="badge bg-light text-dark cursor-pointer" onclick="toggleSpecialization(this)">Commercial</span>
+                                <span class="badge bg-light text-dark cursor-pointer" onclick="toggleSpecialization(this)">Consumer</span>
+                                <span class="badge bg-light text-dark cursor-pointer" onclick="toggleSpecialization(this)">Healthcare</span>
+                                <span class="badge bg-light text-dark cursor-pointer" onclick="toggleSpecialization(this)">Telecom</span>
+                                <span class="badge bg-light text-dark cursor-pointer" onclick="toggleSpecialization(this)">Government</span>
+                            </div>
+                            <input type="hidden" name="specialization" id="specializationInput">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Save Agency
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Agency Details Modal -->
+<div class="modal fade" id="agencyDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agency Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="agencyDetailsContent">
+                <!-- Content loaded dynamically -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let agencies = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadAgencies();
+    loadAgencyStats();
+});
+
+function loadAgencies() {
+    const status = document.getElementById('statusFilter').value;
+    const performance = document.getElementById('performanceFilter').value;
+    const search = document.getElementById('searchInput').value;
+    
+    const params = new URLSearchParams({
+        status: status !== 'all' ? status : '',
+        performance: performance !== 'all' ? performance : '',
+        search: search
+    }).toString();
+    
+    fetch(`/api/agencies?${params}`)
+        .then(response => response.json())
+        .then(data => {
+            agencies = data.agencies;
+            displayAgencies(agencies);
+        })
+        .catch(error => {
+            console.error('Error loading agencies:', error);
+        });
+}
+
+function displayAgencies(agenciesList) {
+    const grid = document.getElementById('agenciesGrid');
+    
+    if (agenciesList.length === 0) {
+        grid.innerHTML = `
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-building fa-3x text-muted mb-3"></i>
+                        <h5>No agencies found</h5>
+                        <p class="text-muted">Add your first debt collection agency to get started</p>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newAgencyModal">
+                            <i class="fas fa-plus me-2"></i>Add First Agency
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    grid.innerHTML = agenciesList.map(agency => `
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card agency-card h-100">
+                <div class="card-header bg-gradient-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">${agency.name}</h6>
+                        <span class="badge ${getStatusBadgeClass(agency.status)}">${agency.status}</span>
+                    </div>
+                    <small class="text-white-50">${agency.code}</small>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="agency-avatar mx-auto mb-3">
+                            <i class="fas fa-building fa-2x"></i>
+                        </div>
+                        <div class="mb-2">
+                            <i class="fas fa-user me-2 text-primary"></i>
+                            <span>${agency.contact_person}</span>
+                        </div>
+                        <div class="mb-2">
+                            <i class="fas fa-envelope me-2 text-primary"></i>
+                            <span>${agency.email}</span>
+                        </div>
+                        ${agency.phone ? `
+                            <div class="mb-3">
+                                <i class="fas fa-phone me-2 text-primary"></i>
+                                <span>${agency.phone}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="performance-card">
+                                <div class="performance-label">Recovery Rate</div>
+                                <div class="performance-value ${getPerformanceColorClass(agency.recovery_rate)}">
+                                    ${agency.recovery_rate}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="performance-card">
+                                <div class="performance-label">SLA Compliance</div>
+                                <div class="performance-value ${getPerformanceColorClass(agency.sla_compliance)}">
+                                    ${agency.sla_compliance}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-row mb-3">
+                        <div class="stat-item">
+                            <div class="stat-value">${agency.total_cases || 0}</div>
+                            <div class="stat-label">Total Cases</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${agency.active_cases || 0}</div>
+                            <div class="stat-label">Active</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">$${parseFloat(agency.recovered_amount || 0).toLocaleString('en-US', {minimumFractionDigits: 0})}</div>
+                            <div class="stat-label">Recovered</div>
+                        </div>
+                    </div>
+                    
+                    ${agency.specialization ? `
+                        <div class="specialization-tags mb-3">
+                            ${agency.specialization.split(',').map(spec => `
+                                <span class="badge bg-light text-dark">${spec.trim()}</span>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="btn-group w-100" role="group">
+                        <button class="btn btn-outline-primary btn-sm" onclick="viewAgency(${agency.id})">
+                            <i class="fas fa-eye me-1"></i>View
+                        </button>
+                        <button class="btn btn-outline-info btn-sm" onclick="editAgency(${agency.id})">
+                            <i class="fas fa-edit me-1"></i>Edit
+                        </button>
+                        <button class="btn btn-outline-success btn-sm" onclick="allocateCasesToAgency(${agency.id})">
+                            <i class="fas fa-exchange-alt me-1"></i>Allocate
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function getStatusBadgeClass(status) {
+    switch(status) {
+        case 'active': return 'bg-success';
+        case 'inactive': return 'bg-secondary';
+        case 'suspended': return 'bg-danger';
+        default: return 'bg-secondary';
+    }
+}
+
+function getPerformanceColorClass(value) {
+    if (value >= 80) return 'text-success';
+    if (value >= 60) return 'text-warning';
+    return 'text-danger';
+}
+
+function loadAgencyStats() {
+    fetch('/api/agency-stats')
+        .then(response => response.json())
+        .then(stats => {
+            document.getElementById('totalAgencies').textContent = stats.total || 0;
+            document.getElementById('activeAgencies').textContent = stats.active || 0;
+            document.getElementById('avgRecoveryRate').textContent = `${stats.avg_recovery_rate || 0}%`;
+            document.getElementById('avgSlaCompliance').textContent = `${stats.avg_sla_compliance || 0}%`;
+        });
+}
+
+function filterAgencies() {
+    loadAgencies();
+}
+
+function searchAgencies() {
+    loadAgencies();
+}
+
+function refreshAgencies() {
+    loadAgencies();
+    loadAgencyStats();
+}
+
+function toggleSpecialization(element) {
+    element.classList.toggle('bg-light');
+    element.classList.toggle('bg-primary');
+    element.classList.toggle('text-dark');
+    element.classList.toggle('text-white');
+    
+    const tags = document.querySelectorAll('#specializationTags .badge.bg-primary');
+    const specializations = Array.from(tags).map(tag => tag.textContent);
+    document.getElementById('specializationInput').value = specializations.join(',');
+}
+
+function createNewAgency(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData);
+    
+    fetch('/api/create-agency', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('newAgencyModal')).hide();
+            event.target.reset();
+            loadAgencies();
+            loadAgencyStats();
+            alert('Agency created successfully');
+        }
+    });
+}
+
+function viewAgency(agencyId) {
+    fetch(`/api/agency/${agencyId}`)
+        .then(response => response.json())
+        .then(agencyData => {
+            const modalContent = document.getElementById('agencyDetailsContent');
+            modalContent.innerHTML = generateAgencyDetailsHTML(agencyData);
+            
+            const modal = new bootstrap.Modal(document.getElementById('agencyDetailsModal'));
+            modal.show();
+        });
+}
+
+function generateAgencyDetailsHTML(agencyData) {
+    return `
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <div class="agency-avatar-large mb-4">
+                            <i class="fas fa-building fa-3x"></i>
+                        </div>
+                        <h4>${agencyData.name}</h4>
+                        <p class="text-muted">${agencyData.code}</p>
+                        <div class="mb-3">
+                            <span class="badge ${getStatusBadgeClass(agencyData.status)} fs-6">
+                                ${agencyData.status}
+                            </span>
+                        </div>
+                        
+                        <div class="contact-info mt-4">
+                            <div class="mb-3">
+                                <i class="fas fa-user me-2 text-primary"></i>
+                                <strong>${agencyData.contact_person}</strong>
+                            </div>
+                            <div class="mb-3">
+                                <i class="fas fa-envelope me-2 text-primary"></i>
+                                <a href="mailto:${agencyData.email}">${agencyData.email}</a>
+                            </div>
+                            ${agencyData.phone ? `
+                                <div class="mb-3">
+                                    <i class="fas fa-phone me-2 text-primary"></i>
+                                    <a href="tel:${agencyData.phone}">${agencyData.phone}</a>
+                                </div>
+                            ` : ''}
+                            ${agencyData.address ? `
+                                <div class="mb-3">
+                                    <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                    <small>${agencyData.address}</small>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        ${agencyData.contract_start ? `
+                            <div class="contract-info mt-4">
+                                <h6 class="border-bottom pb-2">Contract Period</h6>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <small class="text-muted">Start Date</small>
+                                        <p class="mb-1">${new Date(agencyData.contract_start).toLocaleDateString()}</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted">End Date</small>
+                                        <p class="mb-1">${agencyData.contract_end ? new Date(agencyData.contract_end).toLocaleDateString() : 'N/A'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">Performance Metrics</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="metric-card">
+                                    <div class="metric-label">Recovery Rate</div>
+                                    <div class="metric-value ${getPerformanceColorClass(agencyData.recovery_rate)}">
+                                        ${agencyData.recovery_rate}%
+                                    </div>
+                                    <div class="metric-trend">
+                                        <i class="fas fa-arrow-up text-success me-1"></i>
+                                        <span class="text-success">+2.5% this month</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="metric-card">
+                                    <div class="metric-label">SLA Compliance</div>
+                                    <div class="metric-value ${getPerformanceColorClass(agencyData.sla_compliance)}">
+                                        ${agencyData.sla_compliance}%
+                                    </div>
+                                    <div class="metric-trend">
+                                        <i class="fas fa-arrow-up text-success me-1"></i>
+                                        <span class="text-success">+1.8% this month</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="metric-card">
+                                    <div class="metric-label">Average Recovery Time</div>
+                                    <div class="metric-value">
+                                        ${agencyData.avg_recovery_days || 45} days
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="metric-card">
+                                    <div class="metric-label">Success Rate</div>
+                                    <div class="metric-value text-info">
+                                        ${agencyData.success_rate || 65}%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h6 class="mb-0">Case Statistics</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="agencyCaseChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h6 class="mb-0">Recent Activities</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="activity-feed">
+                                    ${agencyData.recent_activities && agencyData.recent_activities.length > 0 ? 
+                                        agencyData.recent_activities.map(activity => `
+                                            <div class="activity-item">
+                                                <div class="activity-dot"></div>
+                                                <div class="activity-content">
+                                                    <div class="d-flex justify-content-between">
+                                                        <span class="fw-medium">${activity.action}</span>
+                                                        <small class="text-muted">${activity.time}</small>
+                                                    </div>
+                                                    <small class="text-muted">${activity.details}</small>
+                                                </div>
+                                            </div>
+                                        `).join('') : 
+                                        '<p class="text-muted text-center py-3">No recent activities</p>'
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">Active Cases</h6>
+                        <button class="btn btn-sm btn-primary" onclick="allocateCasesToAgency(${agencyData.id})">
+                            <i class="fas fa-plus me-1"></i>Allocate More
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Case #</th>
+                                        <th>Customer</th>
+                                        <th>Amount</th>
+                                        <th>Days</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${agencyData.active_cases_list && agencyData.active_cases_list.length > 0 ? 
+                                        agencyData.active_cases_list.map(caseItem => `
+                                            <tr>
+                                                <td>${caseItem.case_number}</td>
+                                                <td>${caseItem.customer_name}</td>
+                                                <td>$${parseFloat(caseItem.amount_due).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                                                <td>${caseItem.days_overdue}</td>
+                                                <td><span class="badge ${getStatusBadgeClass(caseItem.status)}">${caseItem.status}</span></td>
+                                            </tr>
+                                        `).join('') : 
+                                        '<tr><td colspan="5" class="text-center py-3 text-muted">No active cases</td></tr>'
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function editAgency(agencyId) {
+    // Open edit modal with agency data
+    alert('Edit agency: ' + agencyId);
+}
+
+function allocateCasesToAgency(agencyId) {
+    // Open case allocation modal for this agency
+    alert('Allocate cases to agency: ' + agencyId);
+}
+
+function exportAgencies() {
+    window.open('/api/export-agencies', '_blank');
+}
+</script>
+
+<style>
+.agency-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #e0e0e0;
+}
+
+.agency-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.agency-card .card-header {
+    border-bottom: none;
+    padding: 1.25rem;
+}
+
+.agency-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2196F3 0%, #21CBF3 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.agency-avatar-large {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2196F3 0%, #21CBF3 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin: 0 auto;
+}
+
+.performance-card {
+    text-align: center;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.performance-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.performance-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.stats-row {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    border-top: 1px solid #e9ecef;
+    padding-top: 1rem;
+}
+
+.stat-item {
+    flex: 1;
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.specialization-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.metric-card {
+    background: #f8f9fa;
+    padding: 1.25rem;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.metric-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.metric-trend {
+    font-size: 0.8rem;
+}
+
+.activity-feed {
+    position: relative;
+    padding-left: 20px;
+}
+
+.activity-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.activity-dot {
+    position: absolute;
+    left: -20px;
+    top: 5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #2196F3;
+}
+
+.activity-content {
+    background: #f8f9fa;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border-left: 3px solid #2196F3;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+</style>
+{% endblock %}
